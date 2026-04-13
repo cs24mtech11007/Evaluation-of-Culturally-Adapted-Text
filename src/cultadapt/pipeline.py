@@ -22,7 +22,7 @@ def run_pipeline(
     prompt_template: str | Path,
     rubric_path: str | Path,
     with_judge: bool = False,
-    llm_backend: str | None = None,
+    llm_backend: str | None = "ollama",
 ) -> None:
     output_dir = Path(output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)

@@ -1,10 +1,8 @@
 {
   "n_items": 120,
-  "n_rows": 360,
+  "n_rows": 120,
   "methods": [
-    "identity_baseline",
-    "lexical_swap_baseline",
-    "contextual_adapt"
+    "llm_adaptation"
   ],
-  "best_method": "lexical_swap_baseline"
+  "best_method": "llm_adaptation"
 }

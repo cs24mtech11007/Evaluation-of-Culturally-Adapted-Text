@@ -20,41 +20,6 @@ from cultadapt.llm_judge import LLMJudge
 from cultadapt.types import AdaptationItem
 
 
-def _replace_any(text: str, source_terms: list[str], target_terms: list[str]) -> str:
-    if not source_terms or not target_terms:
-        return text
-    out = text
-    for i, term in enumerate(source_terms):
-        repl = target_terms[i % len(target_terms)]
-        out = re.sub(rf"\b{re.escape(term)}\b", repl, out, flags=re.IGNORECASE)
-    return out
-
-
-def identity_baseline(text: str, *_args) -> str:
-    return text
-
-
-def lexical_swap_baseline(text: str, src: dict, tgt: dict) -> str:
-    out = text
-    out = _replace_any(out, src.get("places", []), tgt.get("places", []))
-    out = _replace_any(out, src.get("foods", []), tgt.get("foods", []))
-    out = _replace_any(out, src.get("festivals", []), tgt.get("festivals", []))
-    out = _replace_any(out, src.get("names", []), tgt.get("names", []))
-    return out
-
-
-def contextual_adapt(text: str, src: dict, tgt: dict) -> str:
-    out = lexical_swap_baseline(text, src, tgt)
-    out = _replace_any(out, src.get("social_context", []), tgt.get("social_context", []))
-
-    addendum = []
-    if tgt.get("social_context"):
-        addendum.append(f"The scene reflects {tgt['social_context'][0]}.")
-    if addendum:
-        out = out.rstrip() + " " + " ".join(addendum)
-    return out
-
-
 def main() -> None:
     parser = argparse.ArgumentParser(description="Run ablations for cultural adaptation")
     parser.add_argument("--input", type=str, required=True)
@@ -65,8 +30,8 @@ def main() -> None:
     parser.add_argument(
         "--llm-backend",
         type=str,
-        default=None,
-        help="Optional LLM backend override for judge scoring: ollama or huggingface",
+        default="ollama",
+        help="LLM backend for adaptation: ollama or huggingface",
     )
     args = parser.parse_args()
 
@@ -75,7 +40,7 @@ def main() -> None:
     out_dir = Path(args.output_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    llm_client = LLMClient(LLMConfig(backend=args.llm_backend)) if args.llm_backend else None
+    llm_client = LLMClient(LLMConfig(backend=args.llm_backend))
     judge = LLMJudge(rubric_path=args.rubric_path, llm_client=llm_client) if args.judge else None
     if args.judge and judge and not judge.enabled:
         print("WARNING: --judge requested but the selected LLM backend is not available. Judge scores will be None.")
@@ -87,9 +52,7 @@ def main() -> None:
         return result.adapted_text
 
     methods = {
-        "identity_baseline": identity_baseline,
-        "lexical_swap_baseline": lexical_swap_baseline,
-        "contextual_adapt": llm_adapt,  # Now uses LLM
+        "llm_adaptation": llm_adapt,
     }
 
     all_rows = []

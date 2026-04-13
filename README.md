@@ -16,9 +16,11 @@ You highlighted two constraints:
 2. Existing datasets may not have direct ground-truth targets.
 
 So this project uses:
-- generation pipeline with structured cultural profiles,
+- LLM-powered adaptation pipeline with structured cultural profiles,
 - multi-metric evaluation without reference targets,
 - optional LLM-judge rubric for qualitative depth.
+
+The system exclusively uses LLM adaptation (no fallback methods) to ensure deep, contextual cultural localization.
 
 ## Included Datasets Support
 - EECC-style loaders (CSV/JSONL with text + optional culture metadata)

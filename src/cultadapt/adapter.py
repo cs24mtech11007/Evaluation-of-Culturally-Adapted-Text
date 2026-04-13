@@ -34,7 +34,7 @@ class CulturalAdapter:
         if self.llm.enabled:
             adapted = self.llm.generate(prompt)
         else:
-            adapted = self._fallback_rewrite(item)
+            raise RuntimeError("LLM adaptation required but LLM backend is not available. Please ensure Ollama or another LLM backend is running.")
 
         return AdaptationResult(
             id=item.id,
@@ -45,29 +45,3 @@ class CulturalAdapter:
             genre=item.genre,
             metadata=item.metadata,
         )
-
-    def _fallback_rewrite(self, item: AdaptationItem) -> str:
-        src = self.registry.get(item.source_culture)
-        tgt = self.registry.get(item.target_culture)
-        text = item.text
-
-        text = self._replace_any(text, src.get("places", []), tgt.get("places", []))
-        text = self._replace_any(text, src.get("foods", []), tgt.get("foods", []))
-        text = self._replace_any(text, src.get("festivals", []), tgt.get("festivals", []))
-        text = self._replace_any(text, src.get("names", []), tgt.get("names", []))
-
-        # Add a contextual cue if no obvious substitutions occurred
-        if text == item.text and tgt.get("social_context"):
-            text = f"{text} The setting reflects {tgt['social_context'][0]}."
-
-        return text
-
-    @staticmethod
-    def _replace_any(text: str, source_terms: list[str], target_terms: list[str]) -> str:
-        if not source_terms or not target_terms:
-            return text
-        out = text
-        for i, term in enumerate(source_terms):
-            repl = target_terms[i % len(target_terms)]
-            out = re.sub(rf"\b{re.escape(term)}\b", repl, out, flags=re.IGNORECASE)
-        return out
