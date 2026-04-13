@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cultural Adaptation Human Evaluation</title>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 980px; margin: 24px auto; padding: 0 16px; }
+    .card { border: 1px solid #ddd; border-radius: 10px; padding: 16px; margin-bottom: 14px; }
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    label { font-weight: 600; display: block; margin: 8px 0 4px; }
+    textarea, input, select { width: 100%; padding: 8px; }
+    button { padding: 10px 14px; margin-right: 8px; cursor: pointer; }
+    .muted { color: #666; }
+  </style>
+</head>
+<body>
+  <h1>Cultural Adaptation Human Evaluation UI</h1>
+  <p class="muted">Template UI: fill fields, save rows, then export CSV for analysis.</p>
+
+  <div class="card">
+    <div class="row">
+      <div>
+        <label>Item ID</label>
+        <input id="item_id" placeholder="e.g., ad-1" />
+      </div>
+      <div>
+        <label>Rater ID</label>
+        <input id="rater_id" placeholder="e.g., RATER_01" />
+      </div>
+    </div>
+
+    <div class="row">
+      <div>
+        <label>Source Culture</label>
+        <input id="source_culture" placeholder="north_india" />
+      </div>
+      <div>
+        <label>Target Culture</label>
+        <input id="target_culture" placeholder="tamil_nadu" />
+      </div>
+    </div>
+
+    <label>Genre</label>
+    <input id="genre" placeholder="advertisement / story / textbook" />
+
+    <label>Source Text</label>
+    <textarea id="source_text" rows="4"></textarea>
+
+    <label>Adapted Text</label>
+    <textarea id="adapted_text" rows="4"></textarea>
+
+    <div class="row">
+      <div>
+        <label>Authenticity (1-5)</label>
+        <select id="authenticity_1to5"><option></option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select>
+      </div>
+      <div>
+        <label>Faithfulness (1-5)</label>
+        <select id="faithfulness_1to5"><option></option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select>
+      </div>
+    </div>
+
+    <div class="row">
+      <div>
+        <label>Coherence (1-5)</label>
+        <select id="coherence_1to5"><option></option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select>
+      </div>
+      <div>
+        <label>Safety (1-5)</label>
+        <select id="safety_1to5"><option></option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select>
+      </div>
+    </div>
+
+    <div class="row">
+      <div>
+        <label>Adaptation Depth (1-5)</label>
+        <select id="adaptation_depth_1to5"><option></option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select>
+      </div>
+      <div>
+        <label>Overall Preference (1-5)</label>
+        <select id="overall_preference_1to5"><option></option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select>
+      </div>
+    </div>
+
+    <div class="row">
+      <div>
+        <label>Stereotype Flag</label>
+        <select id="stereotype_flag_yes_no"><option></option><option>yes</option><option>no</option></select>
+      </div>
+      <div>
+        <label>Major Issue Type</label>
+        <select id="major_issue_type">
+          <option></option>
+          <option>none</option>
+          <option>shallow_swap</option>
+          <option>over_localization</option>
+          <option>stereotype</option>
+          <option>factual_mismatch</option>
+          <option>other</option>
+        </select>
+      </div>
+    </div>
+
+    <label>Comments</label>
+    <textarea id="comments" rows="3"></textarea>
+
+    <div style="margin-top: 12px;">
+      <button onclick="addRow()">Add Row</button>
+      <button onclick="exportCsv()">Export CSV</button>
+      <button onclick="clearForm()">Clear Form</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Preview Rows</h3>
+    <pre id="preview" class="muted">[]</pre>
+  </div>
+
+  <script>
+    const rows = [];
+    const fields = [
+      "item_id","source_culture","target_culture","genre","source_text","adapted_text","rater_id",
+      "authenticity_1to5","faithfulness_1to5","coherence_1to5","safety_1to5","adaptation_depth_1to5",
+      "overall_preference_1to5","stereotype_flag_yes_no","major_issue_type","comments"
+    ];
+
+    function getRow() {
+      const row = {};
+      fields.forEach(f => row[f] = document.getElementById(f).value || "");
+      row.eval_timestamp = new Date().toISOString();
+      return row;
+    }
+
+    function addRow() {
+      rows.push(getRow());
+      document.getElementById("preview").textContent = JSON.stringify(rows, null, 2);
+    }
+
+    function clearForm() {
+      fields.forEach(f => document.getElementById(f).value = "");
+    }
+
+    function exportCsv() {
+      if (!rows.length) return alert("No rows added.");
+      const cols = [...fields, "eval_timestamp"];
+      const escapeCell = (v) => {
+        const s = String(v ?? "").replaceAll('"', '""');
+        return /[",\n]/.test(s) ? `"${s}"` : s;
+      };
+      const csv = [cols.join(",")]
+        .concat(rows.map(r => cols.map(c => escapeCell(r[c])).join(",")))
+        .join("\n");
+
+      const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "human_eval_annotations.csv";
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+  </script>
+</body>
+</html>

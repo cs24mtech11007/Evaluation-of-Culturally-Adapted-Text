@@ -1,0 +1,2 @@
+id,source_culture,target_culture,genre,content_similarity,target_culture_signal,adaptation_depth,lexical_shift,stereotype_risk,composite_score
+ad-1,north_region,south_region,advertisement,0.2404,1.0,0.6667,0.7,0.0,0.6375

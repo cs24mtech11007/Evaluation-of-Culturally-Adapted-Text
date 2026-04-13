@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cultadapt"
+version = "0.1.0"
+description = "Intralingual cultural adaptation pipeline focused on Indian subregions"
+readme = "README.md"
+requires-python = ">=3.10"
+authors = [{ name = "NLP Project Team" }]
+dependencies = []
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]

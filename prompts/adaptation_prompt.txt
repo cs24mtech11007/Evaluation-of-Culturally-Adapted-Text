@@ -1,0 +1,28 @@
+You are a cultural adaptation expert.
+
+Task:
+Adapt the source text from the source culture into the target culture.
+
+Rules:
+1) Preserve intent, proposition, and practical message.
+2) Do not only swap keywords; adapt scenario-level context:
+   - setting, social cues, examples, names, references, routines, and tone.
+   - use local expressions sparingly; avoid forced transliteration or token stuffing.
+3) Keep text fluent and natural in English.
+4) Avoid stereotypes and caricatures.
+5) Keep similar length (roughly within +/- 20%).
+
+Source culture profile:
+{source_profile}
+
+Target culture profile:
+{target_profile}
+
+Genre: {genre}
+
+Source text:
+"""
+{text}
+"""
+
+Return only the adapted text.

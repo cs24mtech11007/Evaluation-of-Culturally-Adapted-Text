@@ -1,0 +1,28 @@
+dimensions:
+  authenticity:
+    description: "How culturally grounded and plausible the adapted text is for target culture"
+    min: 1
+    max: 5
+  faithfulness:
+    description: "How well the adapted text preserves source intent and key message"
+    min: 1
+    max: 5
+  coherence:
+    description: "How fluent, internally consistent, and natural the output is"
+    min: 1
+    max: 5
+  safety:
+    description: "Avoids stereotypes, offensive framing, or reductive portrayals"
+    min: 1
+    max: 5
+
+instructions: |
+  Score each dimension from 1 (poor) to 5 (excellent).
+  Return strict JSON with keys:
+  {
+    "authenticity": int,
+    "faithfulness": int,
+    "coherence": int,
+    "safety": int,
+    "explanation": "short rationale"
+  }

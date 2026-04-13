@@ -1,0 +1,93 @@
+{
+  "_meta": {
+    "culture_level": "region",
+    "note": "Uniform region-level profiles covering all major Indian regions. Use aliases for backward compatibility with older keys."
+  },
+  "_aliases": {
+    "north_india": "north_region",
+    "south_india": "south_region",
+    "east_india": "east_region",
+    "west_india": "west_region",
+    "central_india": "central_region",
+    "northeast_india": "northeast_region",
+    "uttar_pradesh": "north_region",
+    "tamil_nadu": "south_region",
+    "kerala": "south_region",
+    "west_bengal": "east_region",
+    "punjab": "north_region",
+    "assam": "northeast_region",
+    "bengal": "east_region",
+    "global": "global_generic",
+    "generic": "global_generic"
+  },
+  "global_generic": {
+    "region": "Global Generic Source",
+    "languages": ["English"],
+    "names": ["Alex", "Sam", "Jordan", "Taylor", "Riley", "Casey"],
+    "foods": ["bread", "soup", "rice", "tea"],
+    "festivals": ["festival", "holiday"],
+    "places": ["city", "town", "school", "market"],
+    "social_context": ["family day", "community event", "weekend market", "school activity"],
+    "tone_cues": ["hello", "thanks"]
+  },
+  "north_region": {
+    "region": "North India",
+    "languages": ["Hindi", "Punjabi", "Urdu", "Dogri", "Kashmiri", "Haryanvi"],
+    "names": ["Aarav", "Rohan", "Priya", "Ananya", "Raj", "Neha", "Gurleen", "Ishaan", "Simran", "Kunal"],
+    "foods": ["paratha", "chole", "rajma", "lassi", "paneer", "kadhi", "sarson da saag", "makki di roti", "kulcha", "chaat"],
+    "festivals": ["Diwali", "Holi", "Lohri", "Navratri", "Baisakhi", "Karva Chauth", "Dussehra"],
+    "places": ["Delhi", "Chandigarh", "Jaipur", "Lucknow", "Amritsar", "Shimla", "Dehradun", "Srinagar"],
+    "social_context": ["winter mornings", "family gatherings", "market bazaars", "festival shopping", "wedding season", "street food evenings", "gurdwara visits"],
+    "tone_cues": ["namaste", "ji", "sat sri akal"]
+  },
+  "south_region": {
+    "region": "South India",
+    "languages": ["Tamil", "Telugu", "Kannada", "Malayalam", "Tulu"],
+    "names": ["Arun", "Karthik", "Meena", "Lakshmi", "Anu", "Arjun", "Nithya", "Pranav", "Deepa", "Srinivas"],
+    "foods": ["idli", "dosa", "sambar", "rasam", "appam", "filter coffee", "pongal", "bisi bele bath", "hyderabadi biryani", "puttu"],
+    "festivals": ["Pongal", "Onam", "Ugadi", "Vishu", "Tamil New Year", "Dasara", "Deepavali"],
+    "places": ["Chennai", "Bengaluru", "Hyderabad", "Kochi", "Madurai", "Mysuru", "Coimbatore", "Thiruvananthapuram"],
+    "social_context": ["temple festivals", "monsoon evenings", "coastal markets", "kolam at doorstep", "music sabhas", "IT corridor commutes", "evening tiffin stalls"],
+    "tone_cues": ["namaskaram", "vanakkam", "namaskara"]
+  },
+  "east_region": {
+    "region": "East India",
+    "languages": ["Bengali", "Odia", "Maithili", "Bhojpuri", "Santali"],
+    "names": ["Subho", "Moumita", "Riya", "Anik", "Sagnik", "Ishita", "Debjit", "Piyali", "Anwesha", "Sourav"],
+    "foods": ["macher jhol", "luchi", "mishti doi", "pitha", "dalma", "chhena poda", "shorshe ilish", "rosogolla", "aloo posto", "khaja"],
+    "festivals": ["Durga Puja", "Poila Boishakh", "Rath Yatra", "Kali Puja", "Saraswati Puja", "Chhath"],
+    "places": ["Kolkata", "Bhubaneswar", "Cuttack", "Durgapur", "Siliguri", "Puri", "Patna", "Asansol"],
+    "social_context": ["community pandals", "book fairs", "evening adda", "riverfront gatherings", "tram-side markets", "cultural clubs", "puja season shopping"],
+    "tone_cues": ["nomoshkar", "namaskar", "pranam"]
+  },
+  "west_region": {
+    "region": "West India",
+    "languages": ["Marathi", "Gujarati", "Konkani", "Kutchi"],
+    "names": ["Aditi", "Soham", "Mihir", "Kavya", "Rutuja", "Dhruv", "Jinal", "Tanmay", "Mrunal", "Harsh"],
+    "foods": ["dhokla", "thepla", "pav bhaji", "poha", "misal", "undhiyu", "vada pav", "puran poli", "khandvi", "sol kadhi"],
+    "festivals": ["Ganesh Chaturthi", "Navratri", "Gudi Padwa", "Janmashtami", "Makar Sankranti"],
+    "places": ["Mumbai", "Pune", "Ahmedabad", "Surat", "Panaji", "Nashik", "Vadodara", "Nagpur"],
+    "social_context": ["seafront promenades", "night markets", "garba nights", "local train commutes", "co-op housing societies", "business districts", "weekend food streets"],
+    "tone_cues": ["namaskar", "kem cho", "majama"]
+  },
+  "central_region": {
+    "region": "Central India",
+    "languages": ["Hindi", "Bundeli", "Chhattisgarhi", "Bagheli"],
+    "names": ["Vivek", "Pooja", "Nitin", "Sakshi", "Abhinav", "Ritika", "Sanjana", "Harshita", "Yash", "Manish"],
+    "foods": ["poha", "dal bafla", "bhutte ka kees", "fara", "sabudana khichdi", "mawa bati", "jalebi", "baafla"],
+    "festivals": ["Diwali", "Dussehra", "Makar Sankranti", "Navratri", "Hareli"],
+    "places": ["Bhopal", "Indore", "Jabalpur", "Raipur", "Gwalior", "Ujjain", "Bilaspur", "Sagar"],
+    "social_context": ["weekly haats", "heritage old city lanes", "family-run shops", "evening chowks", "small-town coaching hubs", "temple fairs", "community grounds"],
+    "tone_cues": ["namaste", "ji", "pranam"]
+  },
+  "northeast_region": {
+    "region": "Northeast India",
+    "languages": ["Assamese", "Manipuri", "Mizo", "Khasi", "Bodo", "Garo", "Nagamese"],
+    "names": ["Rinchen", "Aien", "Nongthombam", "Anamika", "Tashi", "Rupam", "Merina", "Lalrin", "Temsu", "Bidisha"],
+    "foods": ["thukpa", "smoked pork", "bamboo shoot", "axone", "pitha", "khar", "masor tenga", "jadoo", "eromba", "tungrymbai"],
+    "festivals": ["Bihu", "Hornbill Festival", "Wangala", "Chapchar Kut", "Lui-Ngai-Ni", "Nongkrem Dance Festival"],
+    "places": ["Guwahati", "Shillong", "Imphal", "Aizawl", "Kohima", "Itanagar", "Agartala", "Dimapur"],
+    "social_context": ["hillside towns", "community festivals", "rainy landscapes", "handloom markets", "music gatherings", "bamboo craft stalls", "valley-hill commutes"],
+    "tone_cues": ["namaskar", "khublei", "khamaghani"]
+  }
+}
