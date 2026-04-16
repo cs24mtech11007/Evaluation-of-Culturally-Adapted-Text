@@ -70,16 +70,17 @@ def main() -> None:
     plt.savefig(fig_dir / "fig3_genrewise_composite.png", dpi=220)
     plt.close()
 
-    # 4) Pairwise heatmap for best method
-    ctx = pair_df[pair_df["method"] == "contextual_adapt"]
-    mat = ctx.pivot(index="source_culture", columns="target_culture", values="composite_score")
+    # 4) Pairwise heatmap for best available method
+    best_method = summary.sort_values("composite_score", ascending=False).iloc[0]["method"]
+    best_df = pair_df[pair_df["method"] == best_method]
+    mat = best_df.pivot(index="source_culture", columns="target_culture", values="composite_score")
     plt.figure(figsize=(9, 6.5))
     ax = sns.heatmap(mat, annot=True, fmt=".3f", cmap="YlGnBu", cbar_kws={"label": "Composite"})
-    ax.set_title("Pairwise Composite (contextual_adapt)")
+    ax.set_title(f"Pairwise Composite ({best_method})")
     ax.set_xlabel("Target culture")
     ax.set_ylabel("Source culture")
     plt.tight_layout()
-    plt.savefig(fig_dir / "fig4_pairwise_heatmap_contextual.png", dpi=220)
+    plt.savefig(fig_dir / "fig4_pairwise_heatmap_best_method.png", dpi=220)
     plt.close()
 
     print(f"Saved figures to {fig_dir}")

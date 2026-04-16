@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import argparse
 import json
-import re
 import sys
 from pathlib import Path
 
@@ -62,10 +61,7 @@ def main() -> None:
             for item in tqdm(items, desc=f"{method_name}"):
                 src = registry.get(item.source_culture)
                 tgt = registry.get(item.target_culture)
-                if method_name == "contextual_adapt":
-                    adapted = fn(item)
-                else:
-                    adapted = fn(item.text, src, tgt)
+                adapted = fn(item)
                 metrics = evaluate_pair(item.text, adapted, src, tgt)
                 row = {
                     "id": item.id,

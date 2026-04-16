@@ -85,10 +85,10 @@ For benchmark generation, these same profile fields are sampled by [scripts/gene
 In this submission, “extraction” refers to **profile engineering via curated lexical attributes**, followed by programmatic loading and use in adaptation and evaluation.
 
 ### 4.4 Baseline and Ablation Design
-Three methods are compared in [scripts/run_ablation.py](scripts/run_ablation.py):
+The final evaluation setup in [scripts/run_ablation.py](scripts/run_ablation.py) uses a single LLM method:
 1. `llm_adaptation`: LLM-powered entity swaps + social-context adaptation.
 
-This design isolates whether improvements come from shallow lexical replacement or deeper contextual localization.
+This setup focuses on measuring end-to-end LLM cultural adaptation performance across all source-target region pairs.
 
 ### 4.5 Literature Alignment
 This project is aligned conceptually with the following references provided in the problem statement:

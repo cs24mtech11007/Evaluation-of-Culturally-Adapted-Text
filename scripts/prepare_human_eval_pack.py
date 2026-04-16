@@ -1,44 +1,36 @@
 from __future__ import annotations
 
 import argparse
-import random
 from pathlib import Path
 
 import pandas as pd
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Prepare blinded A/B sheet for human evaluation")
+    parser = argparse.ArgumentParser(description="Prepare human evaluation sheet for LLM adaptation")
     parser.add_argument("--ablation-csv", type=str, default="outputs/final_ablation/ablation_metrics_all.csv")
     parser.add_argument("--output", type=str, default="eval/human_eval_blinded_ab.csv")
     parser.add_argument("--sample-size", type=int, default=36)
     parser.add_argument("--seed", type=int, default=42)
     args = parser.parse_args()
 
-    random.seed(args.seed)
     df = pd.read_csv(args.ablation_csv)
 
-    a = df[df["method"] == "lexical_swap_baseline"].copy()
-    b = df[df["method"] == "contextual_adapt"].copy()
+    llm = df[df["method"] == "llm_adaptation"].copy()
+    if llm.empty:
+        raise ValueError("No rows found for method 'llm_adaptation' in ablation CSV")
 
     keep_cols = ["id", "source_culture", "target_culture", "genre", "source_text", "adapted_text"]
-    merged = a[keep_cols].merge(
-        b[["id", "adapted_text"]].rename(columns={"adapted_text": "adapted_text_b"}),
-        on="id",
-        how="inner",
-    ).rename(columns={"adapted_text": "adapted_text_a"})
+    merged = llm[keep_cols].copy()
 
     if args.sample_size < len(merged):
         merged = merged.sample(args.sample_size, random_state=args.seed)
 
     rows = []
     for _, r in merged.iterrows():
-        if random.random() < 0.5:
-            cand_a, cand_b = r["adapted_text_a"], r["adapted_text_b"]
-            label_map = "A=lexical_swap_baseline;B=contextual_adapt"
-        else:
-            cand_a, cand_b = r["adapted_text_b"], r["adapted_text_a"]
-            label_map = "A=contextual_adapt;B=lexical_swap_baseline"
+        cand_a = r["adapted_text"]
+        cand_b = ""
+        label_map = "A=llm_adaptation;B=none"
 
         rows.append(
             {
