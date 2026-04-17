@@ -103,7 +103,7 @@ class LLMClient:
         resp = requests.post(
             f"{self.config.base_url}/api/chat",
             json=payload,
-            timeout=120,
+            timeout=300,
         )
         resp.raise_for_status()
         data = resp.json()
