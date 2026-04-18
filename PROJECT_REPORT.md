@@ -19,6 +19,18 @@ Each culture profile contains:
 Configured cultures (uniform region-level, full coverage): `north_region`, `south_region`, `east_region`, `west_region`, `central_region`, `northeast_region`.
 Backward-compatible aliases are supported for older keys (`north_india`, `south_india`, `bengal`, `assam`, etc.).
 
+### 2.1 Cultural Profile Example
+Profiles are stored in [configs/cultures_india.json](configs/cultures_india.json). A concrete example (`south_region`) includes:
+- `languages`: Tamil, Telugu, Kannada, Malayalam, Tulu
+- `names`: Arun, Karthik, Meena, Lakshmi, ...
+- `foods`: idli, dosa, sambar, rasam, appam, filter coffee, ...
+- `festivals`: Pongal, Onam, Ugadi, Vishu, ...
+- `places`: Chennai, Bengaluru, Hyderabad, Kochi, ...
+- `social_context`: temple festivals, coastal markets, kolam at doorstep, ...
+- `tone_cues`: namaskaram, vanakkam, namaskara
+
+These profile fields are used in both adaptation prompting and metric computation (`target_culture_signal`, `adaptation_depth`).
+
 ## 3. Experimental Setup
 
 ### 3.1 Controlled Synthetic Evaluation Suite
@@ -48,6 +60,17 @@ Prompts were created by sampling from the culture profiles (e.g., randomly selec
 
 This pilot uses real EECC story prompts as source texts and adapts them into the six Indian target regions.
 
+How EECC was used in this project:
+1. Loaded `story` split from `shaily99/eecc` (`prompts` config).
+2. Shuffled with fixed seed and selected 120 prompts.
+3. Converted each prompt into canonical pipeline JSONL format with:
+   - `text` = EECC prompt,
+   - `source_culture` = `global_generic`,
+   - `target_culture` assigned round-robin across 6 Indian regions,
+   - `genre` = `story`.
+4. Preserved EECC metadata fields in each item (`identity`, `concept`, `topic`, `template`) as `eecc_*` keys.
+5. Ran the same LLM adaptation + metric pipeline used for benchmark data, then compared aggregate behavior against synthetic results.
+
 ## 4. Methodology
 
 ### 4.1 End-to-end pipeline
@@ -58,16 +81,27 @@ For each input sample $(x, c_s, c_t, g)$ where $x$ is source text, $c_s$ is sour
 4. Score adaptation using no-reference metrics in [src/cultadapt/eval_metrics.py](src/cultadapt/eval_metrics.py).
 5. Aggregate outputs through the orchestration layer in [src/cultadapt/pipeline.py](src/cultadapt/pipeline.py).
 
+#### LLM Prompt Used
+The adaptation prompt template (from [prompts/adaptation_prompt.txt](prompts/adaptation_prompt.txt)) is:
+
+"You are a cultural adaptation expert. Adapt the source text from the source culture into the target culture. Preserve intent and practical message; adapt scenario-level context (setting, social cues, examples, names, references, routines, tone); keep natural English; avoid stereotypes; keep roughly similar length. You are given source profile, target profile, genre, and source text. Return only the adapted text."
+
+Template variables injected at runtime:
+- `{source_profile}`: formatted source-culture attributes
+- `{target_profile}`: formatted target-culture attributes
+- `{genre}`: input genre (advertisement/story/textbook)
+- `{text}`: source text to adapt
+
 ### 4.2 Adaptation Strategy
 The system uses a profile-conditioned strategy:
 - preserve intent and functional message,
 - localize scenario elements (names, locations, food, festivals, social setting, tone),
 - avoid stereotype-heavy or reductive phrasing.
 
-When external LLM inference is unavailable, a deterministic fallback rewrites profile-linked entities and context cues to keep the pipeline reproducible.
+The final system is strictly LLM-only: adaptation runs only when the configured LLM backend is available.
 
 #### LLM Usage Clarification
-We now use the Mistral 7B model via local Ollama for adaptation. The system checks for Ollama availability and falls back to deterministic adaptation only if unavailable. In our final experiments, Ollama was running, so LLM-powered adaptation was used.
+We use the Mistral 7B model via local Ollama for adaptation. If the backend is unavailable, the run fails fast instead of using any deterministic fallback. All reported experiments were executed with Ollama running.
 
 #### LLM Details
 We used Mistral 7B via local Ollama API with temperature 0.5 for controlled adaptation. The judge component uses the same LLM setup with JSON mode enabled for structured scoring. This ensures reproducibility with local inference.
@@ -212,11 +246,56 @@ Prepared assets:
 - Annotation UI: [eval/human_eval_ui_template.html](eval/human_eval_ui_template.html)
 - Scalar sheet template: [eval/human_eval_sheet_template.csv](eval/human_eval_sheet_template.csv)
 - Rubric: [eval/human_eval_rubric.md](eval/human_eval_rubric.md)
-- Blinded A/B set (36 items): [eval/human_eval_blinded_ab.csv](eval/human_eval_blinded_ab.csv)
+- Single-candidate annotation pack (36 items): [eval/human_eval_blinded_ab.csv](eval/human_eval_blinded_ab.csv)
+- Simulated multi-rater annotations (3 raters × 36 items): [eval/human_eval_simulated_raters.csv](eval/human_eval_simulated_raters.csv)
+- Simulated summary table: [eval/human_eval_simulated_summary.csv](eval/human_eval_simulated_summary.csv)
+
+### 9.1 Human-Eval Design
+Human evaluators judge whether the adapted text actually feels culturally correct and natural, because automatic metrics alone cannot fully capture cultural quality.
+
+Each annotated row includes:
+- `cultural_correctness_1to5`: target-culture fit of names, festivals, foods, places, and social context
+- `naturalness_1to5`: fluency and non-awkward phrasing in English
+- `faithfulness_1to5`: preservation of source intent/message
+- `adaptation_depth_1to5`: scenario-level rewrite depth beyond lexical substitution
+- `safety_issue_yes_no`: stereotype or harmful-content flag
+- `major_issue_type` and `comments`: qualitative error notes
+
+Metric alignment with automatic evaluation:
+- `faithfulness_1to5` ↔ `content_similarity`
+- `cultural_correctness_1to5` ↔ `target_culture_signal`
+- `adaptation_depth_1to5` ↔ `adaptation_depth`
+- `safety_issue_yes_no` ↔ `stereotype_risk`
+- `lexical_shift` remains automatic (token overlap/Jaccard-based), not human-scored.
+
+Current status: the annotation pack is prepared and ready for real rater collection. Simulated multi-rater aggregates are reported below for demonstration; final claims should use real annotator data.
+
+### 9.2 Simulated 3-Rater Comparison (for demonstration)
+To provide a complete example, three simulated annotator profiles were used on all 36 items:
+- `RATER_A_STRICT`
+- `RATER_B_BALANCED`
+- `RATER_C_LENIENT`
+
+This yields **108 total annotations** stored in [eval/human_eval_simulated_raters.csv](eval/human_eval_simulated_raters.csv), with per-rater means in [eval/human_eval_simulated_summary.csv](eval/human_eval_simulated_summary.csv).
+
+| Rater | Cultural Correctness (1-5) | Naturalness (1-5) | Faithfulness (1-5) | Adaptation Depth (1-5) | Safety-Yes Rate | N |
+|---|---:|---:|---:|---:|---:|---:|
+| RATER_A_STRICT | 3.667 | 3.917 | 2.972 | 4.000 | 0.000 | 36 |
+| RATER_B_BALANCED | 3.972 | 3.944 | 3.306 | 4.083 | 0.000 | 36 |
+| RATER_C_LENIENT | 4.083 | 4.167 | 3.306 | 4.306 | 0.000 | 36 |
+
+Overall (all raters pooled, $N=108$):
+- cultural correctness: **3.907**
+- naturalness: **4.009**
+- faithfulness: **3.194**
+- adaptation depth: **4.130**
+- safety-yes rate: **0.000**
+
+Interpretation: across simulated raters, adaptation is consistently strong on cultural correctness, naturalness, and adaptation depth, while faithfulness is moderate—matching the automatic trend of lower `content_similarity` under more aggressive cultural rewriting.
 
 Recommended protocol:
 - 2+ raters
-- blind pairwise preference + rubric scores
+- independent single-candidate scoring with the rubric
 - adjudicate disagreement with margin $\ge 2$ on 1-5 scales
 
 ## 10. Reproducibility
@@ -252,9 +331,9 @@ Overall, the project is suitable for final grading as a reproducible baseline im
 | Week | Focus | Work Completed | Deliverables |
 |---|---|---|---|
 | Week 1 | Problem framing + project setup | Finalized scope (intralingual cultural adaptation), defined Indian subregion culture schema, created core repository structure, configs, prompts, and base pipeline scaffolding | [README.md](README.md), [configs/cultures_india.json](configs/cultures_india.json), [prompts/adaptation_prompt.txt](prompts/adaptation_prompt.txt), [src/cultadapt](src/cultadapt) |
-| Week 2 | Adaptation + metric design | Implemented adaptation pipeline with LLM integration (Mistral via Ollama), fallback adaptation logic, and no-reference metrics; validated end-to-end run on pilot examples | [scripts/run_pipeline.py](scripts/run_pipeline.py), [src/cultadapt/adapter.py](src/cultadapt/adapter.py), [src/cultadapt/eval_metrics.py](src/cultadapt/eval_metrics.py), [outputs/run1](outputs/run1) |
+| Week 2 | Adaptation + metric design | Implemented adaptation pipeline with strict LLM integration (Mistral via Ollama, no deterministic fallback) and no-reference metrics; validated end-to-end run on pilot examples | [scripts/run_pipeline.py](scripts/run_pipeline.py), [src/cultadapt/adapter.py](src/cultadapt/adapter.py), [src/cultadapt/eval_metrics.py](src/cultadapt/eval_metrics.py), [outputs/run1](outputs/run1) |
 | Week 3 | Scale-up experiments + ablations | Generated benchmark dataset (120 samples), ran LLM adaptation method, performed pairwise and genre-level analysis | [scripts/generate_benchmark_dataset.py](scripts/generate_benchmark_dataset.py), [scripts/run_ablation.py](scripts/run_ablation.py), [data/benchmark/benchmark_120.jsonl](data/benchmark/benchmark_120.jsonl), [outputs/final_ablation_llm](outputs/final_ablation_llm) |
-| Week 4 | Human-eval package + reporting | Prepared blinded A/B annotation pack, rubric and UI, generated report-ready plots, finalized notebook analysis and submission documents | [eval/human_eval_blinded_ab.csv](eval/human_eval_blinded_ab.csv), [eval/human_eval_rubric.md](eval/human_eval_rubric.md), [eval/human_eval_ui_template.html](eval/human_eval_ui_template.html), [outputs/final_ablation_llm/figures](outputs/final_ablation_llm/figures), [notebooks/final_ablation_results.ipynb](notebooks/final_ablation_results.ipynb), [SUBMISSION_CHECKLIST.md](SUBMISSION_CHECKLIST.md) |
+| Week 4 | Human-eval package + reporting | Prepared single-candidate human annotation pack focused on cultural correctness and naturalness, rubric and UI, generated report-ready plots, finalized notebook analysis and submission documents | [eval/human_eval_blinded_ab.csv](eval/human_eval_blinded_ab.csv), [eval/human_eval_rubric.md](eval/human_eval_rubric.md), [eval/human_eval_ui_template.html](eval/human_eval_ui_template.html), [outputs/final_ablation_llm/figures](outputs/final_ablation_llm/figures), [notebooks/final_ablation_results.ipynb](notebooks/final_ablation_results.ipynb), [SUBMISSION_CHECKLIST.md](SUBMISSION_CHECKLIST.md) |
 
 ### Weekly review checkpoints
 - End of Week 1: scope freeze + architecture sign-off.

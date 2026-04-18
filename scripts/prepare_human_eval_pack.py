@@ -8,7 +8,7 @@ import pandas as pd
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Prepare human evaluation sheet for LLM adaptation")
-    parser.add_argument("--ablation-csv", type=str, default="outputs/final_ablation/ablation_metrics_all.csv")
+    parser.add_argument("--ablation-csv", type=str, default="outputs/final_ablation_llm/ablation_metrics_all.csv")
     parser.add_argument("--output", type=str, default="eval/human_eval_blinded_ab.csv")
     parser.add_argument("--sample-size", type=int, default=36)
     parser.add_argument("--seed", type=int, default=42)
@@ -28,10 +28,6 @@ def main() -> None:
 
     rows = []
     for _, r in merged.iterrows():
-        cand_a = r["adapted_text"]
-        cand_b = ""
-        label_map = "A=llm_adaptation;B=none"
-
         rows.append(
             {
                 "item_id": r["id"],
@@ -39,14 +35,17 @@ def main() -> None:
                 "target_culture": r["target_culture"],
                 "genre": r["genre"],
                 "source_text": r["source_text"],
-                "candidate_a": cand_a,
-                "candidate_b": cand_b,
-                "preferred_candidate_A_or_B": "",
-                "faithfulness_winner_A_or_B": "",
-                "authenticity_winner_A_or_B": "",
+                "adapted_text": r["adapted_text"],
+                "rater_id": "",
+                "cultural_correctness_1to5": "",
+                "naturalness_1to5": "",
+                "faithfulness_1to5": "",
+                "adaptation_depth_1to5": "",
                 "safety_issue_yes_no": "",
+                "major_issue_type": "",
                 "comments": "",
-                "hidden_label_map_do_not_show_to_annotators": label_map,
+                "eval_timestamp": "",
+                "hidden_method_do_not_show_to_annotators": "llm_adaptation",
             }
         )
 

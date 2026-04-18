@@ -153,19 +153,56 @@ python scripts/run_pipeline.py --input data/external/eecc_story_external_120.jso
 This project computes the following:
 
 1. Content Preservation (`content_similarity`)  
-   TF-IDF cosine similarity between source and adapted text.
+   TF-IDF cosine similarity (unigrams + bigrams) between source and adapted text:
+
+$$
+	ext{content\_similarity} = \cos\big(\mathrm{TFIDF}(x),\,\mathrm{TFIDF}(y)\big),\quad \in [0,1]
+$$
+
+where $x$ is source text and $y$ is adapted text.
 
 2. Cultural Grounding (`target_culture_signal`)  
-   Density of target culture markers (food, festivals, names, places, linguistic cues), penalized if source culture markers remain dominant.
+   Let $t_{hits}$ be target-profile marker hits in adapted text, $s_{hits}$ be source-profile marker hits in adapted text, and $N=\max(1,\text{token\_count}(y))$.
+
+$$
+	ext{raw} = \frac{t_{hits} - 0.4\,s_{hits}}{N}\cdot 20,
+\qquad
+	ext{target\_culture\_signal} = \mathrm{clip}(\text{raw}, 0, 1)
+$$
 
 3. Adaptation Depth (`adaptation_depth`)  
-   Fraction of cultural dimensions that changed (names, food, festivals, setting cues, social context).
+   Over six dimensions $D=$ {names, foods, festivals, places, social_context, tone_cues}, score each dimension $d$ as:
+
+$$
+\delta_d =
+\begin{cases}
+1, & \text{if source term present in }x,\ \text{removed in }y,\ \text{and target term appears in }y\\
+0.5, & \text{if no source term in }x\ \text{and target term appears in }y\\
+0, & \text{otherwise}
+\end{cases}
+$$
+
+Then:
+
+$$
+	ext{adaptation\_depth} = \mathrm{clip}\left(\frac{1}{|D|}\sum_{d\in D} \delta_d, 0, 1\right)
+$$
 
 4. Lexical Novelty (`lexical_shift`)  
-   Measures non-trivial rewriting beyond direct copying.
+   Using normalized token sets $A$ (source) and $B$ (adapted):
+
+$$
+	ext{jaccard}(A,B)=\frac{|A\cap B|}{|A\cup B|},
+\qquad
+	ext{lexical\_shift}=1-\text{jaccard}(A,B)
+$$
 
 5. Stereotype Risk (`stereotype_risk`)  
-   Rule-based soft risk detector for reductive formulations (can be expanded).
+   Rule-based pattern count over adapted text (e.g., "all ... are", "backward", "primitive", etc.):
+
+$$
+	ext{stereotype\_risk}=\mathrm{clip}\left(\frac{\#\text{matched patterns}}{3}, 0, 1\right)
+$$
 
 6. Optional LLM Judge (`judge_*`)  
    Rubric-based scoring on authenticity, coherence, faithfulness, and safety.
@@ -173,7 +210,7 @@ This project computes the following:
 Composite score:
 
 $$
-S = 0.35 C_p + 0.25 C_g + 0.20 A_d + 0.10 L_s + 0.10 (1 - R_s)
+S = 0.35\,C_p + 0.25\,C_g + 0.20\,A_d + 0.10\,L_s + 0.10\,(1 - R_s)
 $$
 
 where $C_p$ is content preservation, $C_g$ target grounding, $A_d$ adaptation depth, $L_s$ lexical shift, $R_s$ stereotype risk.

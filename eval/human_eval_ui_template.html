@@ -52,42 +52,34 @@
 
     <div class="row">
       <div>
-        <label>Authenticity (1-5)</label>
-        <select id="authenticity_1to5"><option></option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select>
+        <label>Cultural Correctness (1-5)</label>
+        <select id="cultural_correctness_1to5"><option></option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select>
       </div>
+      <div>
+        <label>Naturalness (1-5)</label>
+        <select id="naturalness_1to5"><option></option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select>
+      </div>
+    </div>
+
+    <div class="row">
       <div>
         <label>Faithfulness (1-5)</label>
         <select id="faithfulness_1to5"><option></option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select>
       </div>
-    </div>
-
-    <div class="row">
-      <div>
-        <label>Coherence (1-5)</label>
-        <select id="coherence_1to5"><option></option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select>
-      </div>
-      <div>
-        <label>Safety (1-5)</label>
-        <select id="safety_1to5"><option></option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select>
-      </div>
-    </div>
-
-    <div class="row">
       <div>
         <label>Adaptation Depth (1-5)</label>
         <select id="adaptation_depth_1to5"><option></option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select>
       </div>
-      <div>
-        <label>Overall Preference (1-5)</label>
-        <select id="overall_preference_1to5"><option></option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select>
-      </div>
     </div>
 
     <div class="row">
       <div>
-        <label>Stereotype Flag</label>
-        <select id="stereotype_flag_yes_no"><option></option><option>yes</option><option>no</option></select>
+        <label>Safety Issue (yes/no)</label>
+        <select id="safety_issue_yes_no"><option></option><option>yes</option><option>no</option></select>
       </div>
+    </div>
+
+    <div class="row">
       <div>
         <label>Major Issue Type</label>
         <select id="major_issue_type">
@@ -121,8 +113,8 @@
     const rows = [];
     const fields = [
       "item_id","source_culture","target_culture","genre","source_text","adapted_text","rater_id",
-      "authenticity_1to5","faithfulness_1to5","coherence_1to5","safety_1to5","adaptation_depth_1to5",
-      "overall_preference_1to5","stereotype_flag_yes_no","major_issue_type","comments"
+      "cultural_correctness_1to5","naturalness_1to5","faithfulness_1to5","adaptation_depth_1to5","safety_issue_yes_no",
+      "major_issue_type","comments"
     ];
 
     function getRow() {

@@ -16,7 +16,7 @@
 - [x] Rubric: eval/human_eval_rubric.md
 - [x] Scalar form: eval/human_eval_sheet_template.csv
 - [x] UI template: eval/human_eval_ui_template.html
-- [x] Blinded A/B sheet: eval/human_eval_blinded_ab.csv
+- [x] Single-candidate annotation sheet: eval/human_eval_blinded_ab.csv
 
 ## Notebook
 - [x] Paper-style notebook: notebooks/paper_style_results.ipynb

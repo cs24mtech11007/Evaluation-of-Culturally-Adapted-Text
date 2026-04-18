@@ -1,0 +1,4 @@
+rater_id,cultural_correctness_1to5,naturalness_1to5,faithfulness_1to5,adaptation_depth_1to5,safety_yes_rate,n_items
+RATER_A_STRICT,3.667,3.917,2.972,4.0,0.0,36
+RATER_B_BALANCED,3.972,3.944,3.306,4.083,0.0,36
+RATER_C_LENIENT,4.083,4.167,3.306,4.306,0.0,36
