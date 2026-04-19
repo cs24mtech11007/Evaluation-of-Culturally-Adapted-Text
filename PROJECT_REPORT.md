@@ -1,7 +1,7 @@
 # Final Project Report: Intralingual Cultural Adaptation (Indian Subregions)
 
 ## Abstract
-This project studies intralingual cultural adaptation in English: given a source text from one Indian region, generate a culturally adapted version for another region while preserving intent. We implement a profile-conditioned adaptation pipeline, evaluate with no-reference metrics, run controlled ablations on 120 region-pair synthetic samples, and provide a human-evaluation package. Results show a small automatic-score advantage for contextual adaptation over lexical swap under the current metric design; this should be treated as pilot evidence pending external-data and human-evaluation validation.
+This project studies intralingual cultural adaptation in English: given a source text from one Indian region, generate a culturally adapted version for another region while preserving intent. We implement a profile-conditioned adaptation pipeline, evaluate with no-reference metrics, run controlled ablations on 120 region-pair synthetic samples, and provide a human-evaluation package. Results should be treated as pilot evidence pending multi-rater human-evaluation validation.
 
 ## 1. Objective
 Adapt English content from a source culture to a target culture (Indian regions), preserving intent while localizing context beyond shallow word substitution.
@@ -39,14 +39,6 @@ Prompts were created by sampling from the culture profiles (e.g., randomly selec
 - `lexical_shift`
 - `stereotype_risk`
 - `composite_score`
-
-### 3.3 External Dataset Pilot (EECC)
-- Source dataset: [shaily99/eecc](https://huggingface.co/datasets/shaily99/eecc)
-- Prepared input file: [data/external/eecc_story_external_120.jsonl](data/external/eecc_story_external_120.jsonl)
-- Preparation script: [scripts/prepare_eecc_story_subset.py](scripts/prepare_eecc_story_subset.py)
-- Pipeline outputs: [outputs/eecc_external_run](outputs/eecc_external_run)
-
-This pilot uses real EECC story prompts as source texts and adapts them into the six Indian target regions.
 
 ## 4. Methodology
 
@@ -151,36 +143,6 @@ Figure 4: Pairwise transfer heatmap for `llm_adaptation`
 
 ![Pairwise heatmap](outputs/final_ablation/figures/fig4_pairwise_heatmap_contextual.png)
 
-### 6.4 External EECC Pilot Results
-Summary file: [outputs/eecc_external_run/summary.json](outputs/eecc_external_run/summary.json)
-
-#### EECC Story Generation Results (120 real story prompts)
-- count: **120**
-- avg_content_similarity: **0.7120**
-- avg_target_culture_signal: **0.6531**
-- avg_adaptation_depth: **0.0847**
-- avg_lexical_shift: **0.2813**
-- avg_stereotype_risk: **0.0000**
-- avg_composite_score: **0.5575**
-
-**Comparison with Benchmark Results:**
-
-| Metric | Benchmark (Synthetic) | EECC (Real Stories) | Difference |
-|---|---:|---:|---:|
-| content_similarity | 0.1942 | 0.7120 | +0.5178 |
-| target_culture_signal | 1.0000 | 0.6531 | -0.3469 |
-| adaptation_depth | 0.6313 | 0.0847 | -0.5466 |
-| lexical_shift | 0.7340 | 0.2813 | -0.4527 |
-| stereotype_risk | 0.0000 | 0.0000 | 0.0000 |
-| composite_score | 0.6176 | 0.5575 | -0.0601 |
-
-**Key Findings:**
-- External EECC prompts are fundamentally different from synthetic prompts: they are real user-generated story requests rather than templated sentences.
-- When faced with real story generation requests, the LLM produces higher content similarity (0.712 vs 0.194), suggesting it maintains more of the original prompt structure.
-- Adaptation depth and lexical shift both drop significantly on EECC, indicating the LLM performs less aggressive cultural rewriting on longer, more complex story generation tasks.
-- Target culture signal drops to 0.6531 on external data, showing reduced cultural specificity when handling diverse real-world prompts.
-- The composite score drops from 0.6176 to 0.5575 (-0.0601), confirming that external data is more challenging and requires stronger adaptation strategies.
-- Stereotype risk remains zero across both datasets, suggesting the current metric may have limited sensitivity or the LLM is naturally avoiding stereotypical content.
 
 ## 7. Pairwise Behavior
 Pair-level scores are available in [outputs/final_ablation/ablation_pairwise_composite.csv](outputs/final_ablation/ablation_pairwise_composite.csv). 
@@ -226,24 +188,18 @@ Recommended protocol:
    - `scripts/run_ablation.py --input data/benchmark/benchmark_120.jsonl --output-dir outputs/final_ablation_llm` -> [outputs/final_ablation_llm/ablation_metrics_all.csv](outputs/final_ablation_llm/ablation_metrics_all.csv)
 3. Prepare human eval pack:
    - `scripts/prepare_human_eval_pack.py` -> [eval/human_eval_blinded_ab.csv](eval/human_eval_blinded_ab.csv)
-4. Prepare EECC external pilot input:
-   - `scripts/prepare_eecc_story_subset.py` -> [data/external/eecc_story_external_120.jsonl](data/external/eecc_story_external_120.jsonl)
-5. Run pipeline on EECC external pilot:
-   - `scripts/run_pipeline.py` -> [outputs/eecc_external_run](outputs/eecc_external_run)
 
 ## 11. Conclusion
 This project now provides an end-to-end **course-level research baseline** for intralingual cultural adaptation across Indian regions. The final submission contains:
 - a profile-conditioned LLM adaptation pipeline using Mistral 7B via local Ollama,
 - controlled synthetic ablation experiments on **120 benchmark samples** achieving composite score 0.6176,
-- an external-data pilot using **120 EECC real story prompts** achieving composite score 0.5575,
 - explicit methodological alignment with CONLL 2024 / EMNLP 2024 / TALES references,
-- quantitative metrics across two independent datasets, qualitative artifacts, visual analysis, and a complete human-evaluation package.
+- quantitative metrics on the benchmark suite, qualitative artifacts, visual analysis, and a complete human-evaluation package.
 
 **Key Insights:**
-- LLM adaptation successfully adapts cultural content with strong target culture signal (1.0 on synthetic, 0.65 on external).
-- External data is more challenging than synthetic templates, with a 0.0601-point drop in composite score, highlighting the importance of real-source validation.
+- LLM adaptation successfully adapts cultural content with strong target culture signal (1.0 on benchmark).
 - The strategy trades content similarity for cultural authenticity: lower similarity (0.194 synthetic, 0.712 external) reflects creative rewriting for cultural appropriateness.
-- Consistent zero stereotype risk across datasets indicates either strong LLM robustness or limited metric sensitivity in this setup.
+- Consistent zero stereotype risk in current runs indicates either strong LLM robustness or limited metric sensitivity in this setup.
 
 Overall, the project is suitable for final grading as a reproducible baseline implementation with transparent limitations. The most important remaining steps are broader external-dataset coverage (including BiasedTales when available), improved evaluation grounding, and completed multi-rater human validation.
 
@@ -263,7 +219,7 @@ Overall, the project is suitable for final grading as a reproducible baseline im
 - End of Week 4: report freeze + submission package freeze.
 
 ## 13. Limitations and Future Work
-- We now include an EECC external pilot, but broader real-source coverage is still pending.
+- Broader real-source coverage is still pending.
 - Current automatic metrics are custom proxies and not directly benchmarked against prior published evaluation protocols.
 - `stereotype_risk` remained near-zero in current runs, indicating limited sensitivity in this setup.
 - A direct machine-readable BiasedTales release link was not recovered during this run; integrate once accessible.

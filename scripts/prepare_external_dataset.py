@@ -22,7 +22,7 @@ def _read_any(path: Path) -> pd.DataFrame:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Normalize external dataset to canonical cultural adaptation format")
-    parser.add_argument("--input", required=True, help="Path to EECC/BiasedTales-style CSV/JSONL")
+    parser.add_argument("--input", required=True, help="Path to external CSV/JSONL")
     parser.add_argument("--output", required=True, help="Path to canonical output JSONL")
 
     # Column mapping

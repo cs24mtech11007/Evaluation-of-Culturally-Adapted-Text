@@ -23,11 +23,11 @@ So this project uses:
 The system exclusively uses LLM adaptation (no fallback methods) to ensure deep, contextual cultural localization.
 
 ## Included Datasets Support
-- EECC-style loaders (CSV/JSONL with text + optional culture metadata)
-- BiasedTales-style story inputs
+- Generic external loaders (CSV/JSONL with text + optional culture metadata)
+- Story-style external inputs
 
 Current repository results are produced on a controlled synthetic suite for method debugging and ablation. 
-For external-data evaluation, first normalize EECC/BiasedTales files into canonical format.
+For external-data evaluation, first normalize your dataset files into canonical format.
 
 You can plug any dataset into the canonical format:
 
@@ -112,7 +112,7 @@ Outputs:
 - `metrics.csv`
 - `summary.json`
 
-### External dataset normalization (EECC / BiasedTales style)
+### External dataset normalization
 
 Use [scripts/prepare_external_dataset.py](scripts/prepare_external_dataset.py) to convert raw CSV/JSONL into canonical JSONL.
 
@@ -120,8 +120,8 @@ Example:
 
 ```bash
 python scripts/prepare_external_dataset.py \
-   --input data/external/raw_eecc.csv \
-   --output data/external/eecc_canonical.jsonl \
+   --input data/external/raw_external.csv \
+   --output data/external/external_canonical.jsonl \
    --text-col text \
    --id-col id \
    --source-col source_culture \
@@ -133,20 +133,11 @@ Then run:
 
 ```bash
 python scripts/run_pipeline.py \
-   --input data/external/eecc_canonical.jsonl \
-   --output-dir outputs/eecc_run
+   --input data/external/external_canonical.jsonl \
+   --output-dir outputs/external_run
 ```
 
 For local HuggingFace inference, set `LLM_BACKEND=huggingface` in `.env` or add `--llm-backend huggingface`.
-
-### EECC quick-start (ready script)
-
-You can directly prepare an EECC story subset and run the pipeline:
-
-```bash
-python scripts/prepare_eecc_story_subset.py --output data/external/eecc_story_external_120.jsonl --n 120
-python scripts/run_pipeline.py --input data/external/eecc_story_external_120.jsonl --output-dir outputs/eecc_external_run
-```
 
 ## Evaluation Metrics (No Ground Truth)
 
