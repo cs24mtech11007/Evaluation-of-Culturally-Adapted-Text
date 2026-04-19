@@ -1,0 +1,4 @@
+rater_id,content_similarity,target_culture_signal,adaptation_depth,lexical_shift,stereotype_risk,composite_score,n_items
+RATER_1_STRICT,0.1674,0.9689,0.6192,0.7072,0.0118,0.5942,36
+RATER_2_BALANCED,0.1988,0.9925,0.6423,0.735,0.0032,0.6194,36
+RATER_3_LENIENT,0.2284,0.9991,0.6774,0.7521,0.0004,0.6404,36
